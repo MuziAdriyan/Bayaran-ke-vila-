@@ -3,475 +3,457 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Pembayaran</title>
+    <title>Data Pembayaran Harian — Sistem Manajemen Pembayaran</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        utama: '#165DFF',
+                        sukses: '#00B42A',
+                        peringatan: '#FF7D00',
+                        bahaya: '#F53F3F',
+                        gelap: '#1D2129',
+                        'abu-lembut': '#F2F3F5'
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }, darkMode: 'class'
+        }
+    </script>
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg: #f3f4f6;
-            --card-bg: #ffffff;
-            --text: #1f2937;
-            --text-light: #6b7280;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --border: #e5e7eb;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            color: var(--primary);
-        }
-
-        .datetime {
-            font-weight: 600;
-            color: var(--text-light);
-            font-size: 0.95rem;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .stat-card h3 {
-            font-size: 0.85rem;
-            color: var(--text-light);
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .value {
-            font-size: 1.4rem;
-            font-weight: bold;
-        }
-
-        /* Form & Filter */
-        .controls-section {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        input, select, button {
-            padding: 10px 14px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            outline: none;
-            font-size: 0.9rem;
-            width: 100%;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-        }
-
-        button {
-            cursor: pointer;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            font-weight: 600;
-            transition: background 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-reset {
-            background-color: var(--danger);
-        }
-
-        .btn-reset:hover {
-            background-color: #dc2626;
-        }
-
-        .filter-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border);
-        }
-
-        /* Table */
-        .table-container {
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 0.9rem;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-        }
-
-        th {
-            background-color: #f9fafb;
-            color: var(--text-light);
-            font-weight: 600;
-        }
-
-        /* Badges & Actions */
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .badge-lunas { background: #d1fae5; color: #065f46; }
-        .badge-sebagian { background: #fef3c7; color: #92400e; }
-        .badge-belum { background: #fee2e2; color: #991b1b; }
-
-        .action-btns {
-            display: flex;
-            gap: 5px;
-        }
-
-        .action-btns button {
-            padding: 6px 10px;
-            font-size: 0.75rem;
-        }
-
-        .btn-success { background-color: var(--success); }
-        .btn-success:hover { background-color: #059669; }
-
-        .btn-edit { background-color: var(--warning); }
-        .btn-edit:hover { background-color: #d97706; }
-
-        .btn-delete { background-color: var(--danger); }
-        .btn-delete:hover { background-color: #dc2626; }
-
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            header { flex-direction: column; align-items: flex-start; }
-        }
+        * { -webkit-tap-highlight-color: transparent; }
+        body { background: linear-gradient(135deg, #f0f4ff 0%, #eef2ff 100%); min-height: 100vh; }
+        .dark body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .card { backdrop-filter: blur(12px); background: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.3); transition: all 0.3s ease; }
+        .dark .card { background: rgba(30,41,59,0.75); border-color: rgba(255,255,255,0.08); }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(22,93,255,0.12); }
+        .stat-card { background: linear-gradient(135deg, rgba(22,93,255,0.08) 0%, rgba(79,70,229,0.05) 100%); }
+        .dark .stat-card { background: linear-gradient(135deg, rgba(22,93,255,0.15) 0%, rgba(79,70,229,0.08) 100%); }
+        .btn { transition: all 0.25s ease; }
+        .btn:active { transform: scale(0.96); }
+        input, select { transition: all 0.2s ease; }
+        input:focus, select:focus { box-shadow: 0 0 0 3px rgba(22,93,255,0.15); }
+        .badge { font-weight: 500; }
+        .modal-backdrop { background: rgba(15,23,42,0.65); backdrop-filter: blur(8px); }
+        @media (max-width: 640px) { .table-responsive { display: block; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; } }
     </style>
 </head>
-<body>
-
-<div class="container">
-    <header>
-        <h1>Data Pembayaran</h1>
-        <div class="datetime" id="liveDateTime">Loading tanggal...</div>
-    </header>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Total Tagihan</h3>
-            <div class="value" id="statTotalTagihan">Rp 0</div>
-        </div>
-        <div class="stat-card">
-            <h3>Total Terbayar</h3>
-            <div class="value" style="color: var(--success);" id="statTotalTerbayar">Rp 0</div>
-        </div>
-        <div class="stat-card">
-            <h3>Total Sisa Tagihan</h3>
-            <div class="value" style="color: var(--danger);" id="statTotalSisa">Rp 0</div>
-        </div>
-        <div class="stat-card">
-            <h3>Sudah Lunas</h3>
-            <div class="value" id="statOrangLunas">0 Orang</div>
-        </div>
-        <div class="stat-card">
-            <h3>Belum / Sebagian</h3>
-            <div class="value" id="statOrangBelum">0 Orang</div>
-        </div>
-    </div>
-
-    <div class="controls-section">
-        <form id="paymentForm" onsubmit="handleFormSubmit(event)">
-            <input type="hidden" id="editIndex">
-            <div class="form-grid">
-                <input type="text" id="inputNama" placeholder="Nama Pembayar" required>
-                <input type="number" id="inputTagihan" placeholder="Nominal Tagihan (Rp)" required min="0">
-                <input type="number" id="inputBayar" placeholder="Sudah Dibayar (Rp)" required min="0">
-                <input type="date" id="inputTanggal" required>
-                <button type="submit" id="btnSubmit">Tambah Pembayaran</button>
+<body class="font-sans text-gelap dark:text-gray-100">
+    <div class="container mx-auto px-3 py-5 max-w-7xl">
+        <header class="mb-7">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-utama flex items-center gap-2">
+                        <i class="fa fa-calendar-check-o"></i>
+                        Data Pembayaran Harian
+                    </h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Rp2.000 / hari per orang — Catatan Pembayaran Otomatis</p>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="bukaPengaturan()" class="btn bg-peringatan hover:bg-peringatan/90 text-white px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-md">
+                        <i class="fa fa-cog"></i> Pengaturan
+                    </button>
+                    <button onclick="tambahPembayaran()" class="btn bg-utama hover:bg-utama/90 text-white px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-md">
+                        <i class="fa fa-plus"></i> Tambah Pembayaran
+                    </button>
+                    <button onclick="resetSemuaData()" class="btn bg-bahaya/90 hover:bg-bahaya text-white px-4 py-2.5 rounded-lg font-medium flex items-center gap-2 shadow-md">
+                        <i class="fa fa-refresh"></i> Reset Data
+                    </button>
+                </div>
             </div>
-        </form>
+        </header>
 
-        <div class="filter-grid">
-            <input type="text" id="searchNama" placeholder="Cari nama..." oninput="renderTable()">
-            <select id="filterStatus" onchange="renderTable()">
-                <option value="Semua">Semua Status</option>
-                <option value="Lunas">Lunas</option>
-                <option value="Sebagian">Sebagian</option>
-                <option value="Belum Lunas">Belum Lunas</option>
-            </select>
-            <button class="btn-reset" onclick="resetData()">Reset Data Default</button>
+        <section class="card rounded-xl p-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Hari & Tanggal</p>
+                    <p id="hariTanggal" class="font-semibold mt-1">-</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Jam Sekarang</p>
+                    <p id="jamSekarang" class="font-semibold mt-1 text-utama">-</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Tanggal Mulai</p>
+                    <p id="tglMulaiTampil" class="font-semibold mt-1">-</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Jumlah Hari Berjalan</p>
+                    <p id="jumlahHariTampil" class="font-semibold mt-1 text-utama">- hari</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-7">
+            <div class="card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Tarif / Hari</p>
+                        <p id="tarifPerHari" class="text-xl font-bold mt-1 text-utama">Rp2.000</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-utama/10 flex items-center justify-center text-utama text-xl">
+                        <i class="fa fa-money"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Target / Hari (10 Orang)</p>
+                        <p id="targetPerHari" class="text-xl font-bold mt-1 text-utama">Rp20.000</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-utama/10 flex items-center justify-center text-utama text-xl">
+                        <i class="fa fa-users"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Target Keseluruhan</p>
+                        <p id="targetKeseluruhan" class="text-xl font-bold mt-1 text-utama">Rp0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-utama/10 flex items-center justify-center text-utama text-xl">
+                        <i class="fa fa-bullseye"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total Tagihan</p>
+                        <p id="totalTagihan" class="text-xl font-bold mt-1 text-utama">Rp0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-utama/10 flex items-center justify-center text-utama text-xl">
+                        <i class="fa fa-file-text"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Uang Terkumpul</p>
+                        <p id="totalTerbayar" class="text-xl font-bold mt-1 text-sukses">Rp0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-sukses/10 flex items-center justify-center text-sukses text-xl">
+                        <i class="fa fa-check-circle"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card rounded-xl p-5 stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Sisa Pembayaran</p>
+                        <p id="totalBelumLunas" class="text-xl font-bold mt-1 text-bahaya">Rp0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-bahaya/10 flex items-center justify-center text-bahaya text-xl">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card rounded-xl p-4 mb-6">
+            <div class="flex flex-col sm:flex-row gap-3 items-stretch">
+                <div class="relative flex-1">
+                    <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="cariNama" placeholder="Cari nama..." oninput="renderTabel()" class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
+                </div>
+                <select id="filterStatus" onchange="renderTabel()" class="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 min-w-[160px]">
+                    <option value="semua">Semua Status</option>
+                    <option value="lunas">✅ Lunas</option>
+                    <option value="belum">❌ Belum Lunas</option>
+                    <option value="sebagian">⚠️ Sebagian</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="card rounded-xl overflow-hidden shadow-lg">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 font-semibold text-lg">
+                <i class="fa fa-list-alt mr-2 text-utama"></i>Daftar Pembayaran Harian
+            </div>
+            <div class="p-4 table-responsive">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-abu-lembut dark:bg-gray-800/60 text-left">
+                            <th class="p-3 font-semibold text-center w-12">No</th>
+                            <th class="p-3 font-semibold">Nama</th>
+                            <th class="p-3 font-semibold text-right whitespace-nowrap">Bayaran/Hari</th>
+                            <th class="p-3 font-semibold text-center w-28">Jumlah Hari</th>
+                            <th class="p-3 font-semibold text-right whitespace-nowrap">Total Tagihan</th>
+                            <th class="p-3 font-semibold text-right whitespace-nowrap">Sudah Dibayar</th>
+                            <th class="p-3 font-semibold text-center w-28">Hari Terbayar</th>
+                            <th class="p-3 font-semibold text-right whitespace-nowrap">Sisa Tagihan</th>
+                            <th class="p-3 font-semibold text-center w-24">Status</th>
+                            <th class="p-3 font-semibold text-center w-52">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="isiTabel"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL PENGATURAN -->
+    <div id="modalPengaturan" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="absolute inset-0 modal-backdrop" onclick="tutupPengaturan()"></div>
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <button onclick="tutupPengaturan()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl">
+                <i class="fa fa-times"></i>
+            </button>
+            <h2 class="text-xl font-bold mb-5 text-peringatan flex items-center gap-2">
+                <i class="fa fa-cog"></i> Pengaturan Sistem
+            </h2>
+            <form onsubmit="simpanPengaturan(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tanggal Mulai Pembayaran <span class="text-bahaya">*</span></label>
+                    <input type="date" id="pengaturanTglMulai" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tarif Pembayaran per Hari (Rp)</label>
+                    <input type="number" id="pengaturanTarif" min="0" value="2000" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="tutupPengaturan()" class="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 font-medium hover:bg-gray-100 dark:hover:bg-gray-700">Batal</button>
+                    <button type="submit" class="flex-1 bg-peringatan hover:bg-peringatan/90 text-white px-4 py-2.5 rounded-lg font-medium shadow-md">Simpan Pengaturan</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>Nominal Tagihan</th>
-                    <th>Sudah Dibayar</th>
-                    <th>Sisa Tagihan</th>
-                    <th>Tanggal</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                </tbody>
-        </table>
+    <!-- MODAL FORM PEMBAYARAN -->
+    <div id="modalForm" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="absolute inset-0 modal-backdrop" onclick="tutupModal()"></div>
+        <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <button onclick="tutupModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl">
+                <i class="fa fa-times"></i>
+            </button>
+            <h2 id="judulModal" class="text-xl font-bold mb-5 text-utama">Tambah Pembayaran</h2>
+            <form id="formPembayaran" onsubmit="simpanData(event)" class="space-y-4">
+                <input type="hidden" id="editIndex">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nama</label>
+                    <input type="text" id="namaLengkap" readonly class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700/50">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nominal Dibayar (Rp) <span class="text-bahaya">*</span></label>
+                    <input type="number" id="sudahDibayar" min="0" step="100" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Tanggal Pembayaran</label>
+                    <input type="date" id="tanggalBayar" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+                </div>
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="tutupModal()" class="flex-1 px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 font-medium hover:bg-gray-100 dark:hover:bg-gray-700">Batal</button>
+                    <button type="submit" class="flex-1 bg-utama hover:bg-utama/90 text-white px-4 py-2.5 rounded-lg font-medium shadow-md">Simpan</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<script>
-    // Data Default Nama sesuai permintaan
-    const defaultData = [
-        { nama: "Anwar", tagihan: 100000, bayar: 100000, tgl: getTodayDate() },
-        { nama: "Adi", tagihan: 100000, bayar: 0, tgl: getTodayDate() },
-        { nama: "Anam", tagihan: 100000, bayar: 50000, tgl: getTodayDate() },
-        { nama: "Dava", tagihan: 100000, bayar: 100000, tgl: getTodayDate() },
-        { nama: "Jaya", tagihan: 100000, bayar: 0, tgl: getTodayDate() },
-        { nama: "Parid", tagihan: 100000, bayar: 70000, tgl: getTodayDate() },
-        { nama: "Nawaf", tagihan: 100000, bayar: 100000, tgl: getTodayDate() },
-        { nama: "Muzi", tagihan: 100000, bayar: 20000, tgl: getTodayDate() },
-        { nama: "Ripal", tagihan: 100000, bayar: 0, tgl: getTodayDate() },
-        { nama: "Rahmat", tagihan: 100000, bayar: 100000, tgl: getTodayDate() }
-    ];
+    <!-- TOAST NOTIFIKASI -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-400 pointer-events-none">
+        <div class="bg-gray-900 dark:bg-gray-700 text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3">
+            <i id="toastIkon" class="fa fa-check-circle text-sukses text-lg"></i>
+            <span id="toastTeks" class="text-sm font-medium">Berhasil disimpan!</span>
+        </div>
+    </div>
 
-    let payments = [];
+    <script>
+        const DAFTAR_NAMA = ['Anwar','Adi','Anam','Dava','Jaya','Parid','Nawaf','Muzi','Ripal','Rahmat'];
+        const STORAGE_DATA = 'pembayaran_harian_data';
+        const STORAGE_PENGATURAN = 'pembayaran_harian_pengaturan';
+        const JUMLAH_ORANG = 10;
+        let daftarPembayaran = [];
+        let pengaturan = { tanggalMulai: '2026-01-01', tarifPerHari: 2000 };
 
-    // Helper: Mengambil format tanggal YYYY-MM-DD
-    function getTodayDate() {
-        return new Date().toISOString().split('T')[0];
-    }
-
-    // Helper: Format Rupiah
-    function formatRupiah(number) {
-        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
-    }
-
-    // Real-Time Clock
-    function updateClock() {
-        const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-        document.getElementById('liveDateTime').innerText = now.toLocaleDateString('id-ID', options);
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
-
-    // Inisialisasi Data dari localStorage
-    function initData() {
-        const localData = localStorage.getItem('dataPembayaran');
-        if (localData) {
-            payments = JSON.parse(localData);
-        } else {
-            payments = [...defaultData];
-            saveData();
+        function formatRupiah(angka) { return 'Rp' + Number(angka || 0).toLocaleString('id-ID'); }
+        function formatTanggal(tgl) { if(!tgl || tgl==='-') return '-'; const d=new Date(tgl); return d.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'}); }
+        function hariSelisih(tglMulai, tglSkr) {
+            const mulai=new Date(tglMulai), skr=new Date(tglSkr);
+            mulai.setHours(0,0,0,0); skr.setHours(0,0,0,0);
+            const diff=skr-mulai; return diff<0 ? 0 : Math.floor(diff/(1000*60*60*24))+1;
         }
-        document.getElementById('inputTanggal').value = getTodayDate();
-        renderTable();
-    }
+        function hariTerbayar(nominal) { return Math.floor(Number(nominal||0)/pengaturan.tarifPerHari); }
+        function hitungStatus(item, hariBerjalan) {
+            const tagihan=hariBerjalan*pengaturan.tarifPerHari;
+            const dibayar=Number(item.sudahDibayar)||0;
+            if(dibayar>=tagihan) return 'lunas';
+            if(dibayar>0) return 'sebagian';
+            return 'belum';
+        }
+        function dapatkanLabelStatus(status) {
+            switch(status){
+                case 'lunas': return '<span class="badge px-2 py-1 rounded-full bg-sukses/10 text-sukses text-xs font-medium">✅ Lunas</span>';
+                case 'sebagian': return '<span class="badge px-2 py-1 rounded-full bg-peringatan/10 text-peringatan text-xs font-medium">⚠️ Sebagian</span>';
+                default: return '<span class="badge px-2 py-1 rounded-full bg-bahaya/10 text-bahaya text-xs font-medium">❌ Belum Lunas</span>';
+            }
+        }
+        function tampilkanToast(teks,jenis='sukses'){
+            const toast=document.getElementById('toast'),ikon=document.getElementById('toastIkon'),teksEl=document.getElementById('toastTeks');
+            teksEl.textContent=teks;
+            ikon.className=jenis==='sukses'?'fa fa-check-circle text-sukses text-lg':'fa fa-exclamation-circle text-bahaya text-lg';
+            toast.classList.remove('translate-y-20','opacity-0');toast.classList.add('translate-y-0','opacity-100');
+            setTimeout(()=>{toast.classList.add('translate-y-20','opacity-0');toast.classList.remove('translate-y-0','opacity-100');},2500);
+        }
+        function simpanKeStorage(){
+            localStorage.setItem(STORAGE_DATA,JSON.stringify(daftarPembayaran));
+            localStorage.setItem(STORAGE_PENGATURAN,JSON.stringify(pengaturan));
+        }
+        function muatDariStorage(){
+            const p=localStorage.getItem(STORAGE_PENGATURAN);
+            if(p) pengaturan=JSON.parse(p);
+            const d=localStorage.getItem(STORAGE_DATA);
+            if(d){
+                daftarPembayaran=JSON.parse(d);
+                if(!daftarPembayaran.find(i=>i.nama==='Parid')) daftarPembayaran.push({nama:'Parid',sudahDibayar:70000,tanggalBayar:new Date().toISOString().split('T')[0]});
+            }else{
+                daftarPembayaran=DAFTAR_NAMA.map(n=>({nama:n,sudahDibayar:n==='Parid'?70000:0,tanggalBayar:n==='Parid'?new Date().toISOString().split('T')[0]:'-'}));
+                simpanKeStorage();
+            }
+        }
+        function perbaruiWaktu(){
+            const now=new Date();
+            const hari=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][now.getDay()];
+            const tgl=now.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+            const jam=now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+            document.getElementById('hariTanggal').textContent=hari+', '+tgl;
+            document.getElementById('jamSekarang').textContent=jam;
+        }
+        function perbaruiStatistik(){
+            const hariBerjalan=hariSelisih(pengaturan.tanggalMulai,new Date());
+            const tagihanPerOrang=hariBerjalan*pengaturan.tarifPerHari;
+            const targetPerHari=JUMLAH_ORANG*pengaturan.tarifPerHari;
+            const targetKeseluruhan=hariBerjalan*targetPerHari;
+            const totalTagihan=daftarPembayaran.length*tagihanPerOrang;
+            const totalTerbayar=daftarPembayaran.reduce((s,d)=>s+Number(d.sudahDibayar||0),0);
+            const totalSisa=Math.max(0,totalTagihan-totalTerbayar);
+            const lunas=daftarPembayaran.filter(d=>hitungStatus(d,hariBerjalan)==='lunas').length;
+            const belum=daftarPembayaran.filter(d=>hitungStatus(d,hariBerjalan)==='belum').length;
+            const sebagian=daftarPembayaran.filter(d=>hitungStatus(d,hariBerjalan)==='sebagian').length;
 
-    // Simpan ke localStorage
-    function saveData() {
-        localStorage.setItem('dataPembayaran', JSON.stringify(payments));
-    }
+            document.getElementById('tarifPerHari').textContent=formatRupiah(pengaturan.tarifPerHari);
+            document.getElementById('targetPerHari').textContent=formatRupiah(targetPerHari);
+            document.getElementById('targetKeseluruhan').textContent=formatRupiah(targetKeseluruhan);
+            document.getElementById('tglMulaiTampil').textContent=formatTanggal(pengaturan.tanggalMulai);
+            document.getElementById('jumlahHariTampil').textContent=hariBerjalan+' hari';
+            document.getElementById('totalTagihan').textContent=formatRupiah(totalTagihan);
+            document.getElementById('totalTerbayar').textContent=formatRupiah(totalTerbayar);
+            document.getElementById('totalBelumLunas').textContent=formatRupiah(totalSisa);
+        }
+        function renderTabel(){
+            const hariBerjalan=hariSelisih(pengaturan.tanggalMulai,new Date());
+            const tagihanPerOrang=hariBerjalan*pengaturan.tarifPerHari;
+            const pencarian=document.getElementById('cariNama').value.toLowerCase().trim();
+            const statusFilter=document.getElementById('filterStatus').value;
+            const tbody=document.getElementById('isiTabel');tbody.innerHTML='';
 
-    // Hitung Status
-    function getStatus(tagihan, bayar) {
-        if (bayar >= tagihan) return 'Lunas';
-        if (bayar > 0 && bayar < tagihan) return 'Sebagian';
-        return 'Belum Lunas';
-    }
+            let dataFilter=daftarPembayaran.filter(item=>{
+                const cocokNama=item.nama.toLowerCase().includes(pencarian);
+                const cocokStatus=statusFilter==='semua'||hitungStatus(item,hariBerjalan)===statusFilter;
+                return cocokNama&&cocokStatus;
+            });
 
-    // Render Tabel & Update Dashboard
-    function renderTable() {
-        const tbody = document.getElementById('tableBody');
-        const searchVal = document.getElementById('searchNama').value.toLowerCase();
-        const filterVal = document.getElementById('filterStatus').value;
-        
-        tbody.innerHTML = '';
-
-        let totalTagihan = 0;
-        let totalTerbayar = 0;
-        let totalSisa = 0;
-        let orangLunas = 0;
-        let orangBelum = 0;
-
-        payments.forEach((item, index) => {
-            const sisa = Math.max(0, item.tagihan - item.bayar);
-            const status = getStatus(item.tagihan, item.bayar);
-
-            // Statistik global (seluruh data)
-            totalTagihan += Number(item.tagihan);
-            totalTerbayar += Number(item.bayar);
-            totalSisa += sisa;
-            if (status === 'Lunas') orangLunas++;
-            else orangBelum++;
-
-            // Filtering
-            const matchesSearch = item.nama.toLowerCase().includes(searchVal);
-            const matchesFilter = filterVal === 'Semua' || status === filterVal;
-
-            if (matchesSearch && matchesFilter) {
-                let badgeClass = 'badge-belum';
-                if (status === 'Lunas') badgeClass = 'badge-lunas';
-                if (status === 'Sebagian') badgeClass = 'badge-sebagian';
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td><strong>${item.nama}</strong></td>
-                    <td>${formatRupiah(item.tagihan)}</td>
-                    <td>${formatRupiah(item.bayar)}</td>
-                    <td>${formatRupiah(sisa)}</td>
-                    <td>${item.tgl || '-'}</td>
-                    <td><span class="badge ${badgeClass}">${status}</span></td>
-                    <td>
-                        <div class="action-btns">
-                            ${status !== 'Lunas' ? `<button class="btn-success" onclick="markAsLunas(${index})">Lunas</button>` : ''}
-                            <button class="btn-edit" onclick="editData(${index})">Edit</button>
-                            <button class="btn-delete" onclick="deleteData(${index})">Hapus</button>
+            dataFilter.forEach((item,idxAsli)=>{
+                const idxGlobal=daftarPembayaran.indexOf(item);
+                const dibayar=Number(item.sudahDibayar)||0;
+                const sisa=Math.max(0,tagihanPerOrang-dibayar);
+                const hrTerbayar=hariTerbayar(dibayar);
+                const status=hitungStatus(item,hariBerjalan);
+                const tr=document.createElement('tr');
+                tr.className='border-b border-gray-200 dark:border-gray-700 hover:bg-abu-lembut/40 dark:hover:bg-gray-800/40 transition-colors';
+                tr.innerHTML=`
+                    <td class="p-3 text-center">${idxAsli+1}</td>
+                    <td class="p-3 font-medium">${item.nama}</td>
+                    <td class="p-3 text-right">${formatRupiah(pengaturan.tarifPerHari)}</td>
+                    <td class="p-3 text-center">${hariBerjalan} hari</td>
+                    <td class="p-3 text-right font-medium">${formatRupiah(tagihanPerOrang)}</td>
+                    <td class="p-3 text-right text-sukses font-medium">${formatRupiah(dibayar)}</td>
+                    <td class="p-3 text-center text-sukses">${hrTerbayar} hari</td>
+                    <td class="p-3 text-right ${sisa>0?'text-bahaya':'text-sukses font-medium'}">${formatRupiah(sisa)}</td>
+                    <td class="p-3 text-center">${dapatkanLabelStatus(status)}</td>
+                    <td class="p-3 text-center">
+                        <div class="flex flex-wrap justify-center gap-1.5">
+                            <button onclick="tandaiLunas(${idxGlobal})" class="btn text-xs px-2 py-1.5 bg-sukses/90 text-white rounded-md hover:bg-sukses"><i class="fa fa-check"></i> Lunas</button>
+                            <button onclick="tambahPembayaran(${idxGlobal})" class="btn text-xs px-2 py-1.5 bg-utama/90 text-white rounded-md hover:bg-utama"><i class="fa fa-plus"></i> Bayar</button>
+                            <button onclick="editData(${idxGlobal})" class="btn text-xs px-2 py-1.5 bg-peringatan/90 text-white rounded-md hover:bg-peringatan"><i class="fa fa-pencil"></i> Edit</button>
+                            <button onclick="hapusData(${idxGlobal})" class="btn text-xs px-2 py-1.5 bg-bahaya/90 text-white rounded-md hover:bg-bahaya"><i class="fa fa-trash"></i> Hapus</button>
                         </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
+            });
+
+            if(dataFilter.length===0) tbody.innerHTML=`<tr><td colspan="10" class="p-8 text-center text-gray-500 dark:text-gray-400">Tidak ada data pembayaran</td></tr>`;
+            perbaruiStatistik();
+        }
+        function bukaPengaturan(){
+            document.getElementById('pengaturanTglMulai').value=pengaturan.tanggalMulai;
+            document.getElementById('pengaturanTarif').value=pengaturan.tarifPerHari;
+            document.getElementById('modalPengaturan').classList.remove('hidden');document.getElementById('modalPengaturan').classList.add('flex');
+        }
+        function tutupPengaturan(){ document.getElementById('modalPengaturan').classList.add('hidden');document.getElementById('modalPengaturan').classList.remove('flex'); }
+        function simpanPengaturan(e){
+            e.preventDefault();
+            pengaturan.tanggalMulai=document.getElementById('pengaturanTglMulai').value;
+            pengaturan.tarifPerHari=Number(document.getElementById('pengaturanTarif').value)||2000;
+            simpanKeStorage();perbaruiStatistik();renderTabel();tutupPengaturan();
+            tampilkanToast('Pengaturan berhasil disimpan! ✅');
+        }
+        function bukaModal(){ document.getElementById('modalForm').classList.remove('hidden');document.getElementById('modalForm').classList.add('flex'); }
+        function tutupModal(){ document.getElementById('modalForm').classList.add('hidden');document.getElementById('modalForm').classList.remove('flex');document.getElementById('formPembayaran').reset();document.getElementById('editIndex').value=''; }
+        function tambahPembayaran(idx){
+            bukaModal();document.getElementById('judulModal').textContent='Tambah Pembayaran — '+daftarPembayaran[idx].nama;
+            document.getElementById('editIndex').value=idx;document.getElementById('namaLengkap').value=daftarPembayaran[idx].nama;
+            document.getElementById('tanggalBayar').value=new Date().toISOString().split('T')[0];document.getElementById('sudahDibayar').value='';
+        }
+        function editData(idx){
+            bukaModal();document.getElementById('judulModal').textContent='Edit Pembayaran — '+daftarPembayaran[idx].nama;
+            document.getElementById('editIndex').value=idx;document.getElementById('namaLengkap').value=daftarPembayaran[idx].nama;
+            document.getElementById('sudahDibayar').value=daftarPembayaran[idx].sudahDibayar;
+            document.getElementById('tanggalBayar').value=daftarPembayaran[idx].tanggalBayar==='-'?'':daftarPembayaran[idx].tanggalBayar;
+        }
+        function simpanData(e){
+            e.preventDefault();const idx=document.getElementById('editIndex').value;
+            const bayar=Number(document.getElementById('sudahDibayar').value)||0;
+            const tgl=document.getElementById('tanggalBayar').value||'-';
+            if(idx==='') return tutupModal();
+            const i=Number(idx);
+            daftarPembayaran[i].sudahDibayar=(Number(daftarPembayaran[i].sudahDibayar)||0)+bayar;
+            daftarPembayaran[i].tanggalBayar=tgl;
+            simpanKeStorage();renderTabel();tutupModal();
+            tampilkanToast('Pembayaran '+daftarPembayaran[i].nama+' ditambahkan! ✅');
+        }
+        function tandaiLunas(idx){
+            const hariBerjalan=hariSelisih(pengaturan.tanggalMulai,new Date());
+            const tagihan=hariBerjalan*pengaturan.tarifPerHari;
+            daftarPembayaran[idx].sudahDibayar=tagihan;
+            daftarPembayaran[idx].tanggalBayar=new Date().toISOString().split('T')[0];
+            simpanKeStorage();renderTabel();
+            tampilkanToast(daftarPembayaran[idx].nama+' ditandai LUNAS! ✅');
+        }
+        function hapusData(idx){
+            if(confirm(`Hapus data atas nama "${daftarPembayaran[idx].nama}"?`)){
+                daftarPembayaran[idx].sudahDibayar=0;daftarPembayaran[idx].tanggalBayar='-';
+                simpanKeStorage();renderTabel();
+                tampilkanToast('Data pembayaran dihapus! ✅');
             }
+        }
+        function resetSemuaData(){
+            if(confirm('⚠️ Yakin ingin MENGHAPUS SEMUA DATA & kembali ke awal? TIDAK BISA DIBATALKAN!')){
+                localStorage.removeItem(STORAGE_DATA);localStorage.removeItem(STORAGE_PENGATURAN);
+                pengaturan={tanggalMulai:'2026-01-01',tarifPerHari:2000};
+                muatDariStorage();renderTabel();
+                tampilkanToast('Semua data telah direset! 🔄');
+            }
+        }
+        document.addEventListener('DOMContentLoaded',()=>{
+            muatDariStorage();perbaruiWaktu();renderTabel();
+            setInterval(perbaruiWaktu,1000);
         });
-
-        // Render Statistik ke UI
-        document.getElementById('statTotalTagihan').innerText = formatRupiah(totalTagihan);
-        document.getElementById('statTotalTerbayar').innerText = formatRupiah(totalTerbayar);
-        document.getElementById('statTotalSisa').innerText = formatRupiah(totalSisa);
-        document.getElementById('statOrangLunas').innerText = `${orangLunas} Orang`;
-        document.getElementById('statOrangBelum').innerText = `${orangBelum} Orang`;
-    }
-
-    // Form Handlers (Tambah & Edit)
-    function handleFormSubmit(e) {
-        e.preventDefault();
-        const editIdx = document.getElementById('editIndex').value;
-        const nama = document.getElementById('inputNama').value;
-        const tagihan = Number(document.getElementById('inputTagihan').value);
-        const bayar = Number(document.getElementById('inputBayar').value);
-        const tgl = document.getElementById('inputTanggal').value;
-
-        if (editIdx === '') {
-            // Tambah baru
-            payments.push({ nama, tagihan, bayar, tgl });
-        } else {
-            // Update data
-            payments[editIdx] = { nama, tagihan, bayar, tgl };
-            document.getElementById('editIndex').value = '';
-            document.getElementById('btnSubmit').innerText = 'Tambah Pembayaran';
-        }
-
-        saveData();
-        renderTable();
-        document.getElementById('paymentForm').reset();
-        document.getElementById('inputTanggal').value = getTodayDate();
-    }
-
-    // Aksi: Tandai Lunas
-    function markAsLunas(index) {
-        payments[index].bayar = payments[index].tagihan;
-        saveData();
-        renderTable();
-    }
-
-    // Aksi: Edit Data
-    function editData(index) {
-        const item = payments[index];
-        document.getElementById('editIndex').value = index;
-        document.getElementById('inputNama').value = item.nama;
-        document.getElementById('inputTagihan').value = item.tagihan;
-        document.getElementById('inputBayar').value = item.bayar;
-        document.getElementById('inputTanggal').value = item.tgl || getTodayDate();
-        document.getElementById('btnSubmit').innerText = 'Update Data';
-    }
-
-    // Aksi: Hapus Data
-    function deleteData(index) {
-        if (confirm(`Apakah Anda yakin ingin menghapus data ${payments[index].nama}?`)) {
-            payments.splice(index, 1);
-            saveData();
-            renderTable();
-        }
-    }
-
-    // Reset Data Default
-    function resetData() {
-        if (confirm('Apakah Anda ingin mengembalikan data ke daftar nama default awal?')) {
-            payments = [...defaultData];
-            saveData();
-            renderTable();
-        }
-    }
-
-    // Jalankan aplikasi
-    initData();
-</script>
-
+    </script>
 </body>
 </html>
